@@ -44,7 +44,7 @@ class Office extends React.Component {
 
     // We update the photo once per minute:
     // 60 * 1000
-    setInterval(this.updateSnapshot, 1000);
+    setInterval(this.updateSnapshot, 60000);
   }
   updateSnapshot() {
     console.log("Updating photo");
