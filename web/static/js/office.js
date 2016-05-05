@@ -10,7 +10,7 @@ class Office extends React.Component {
 
     this.state = {
       ownFace: {
-        name: props.name
+        name: props.name,
         image: null
       },
       faces: [],
