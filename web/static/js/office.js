@@ -8,7 +8,13 @@ class Office extends React.Component {
   constructor(props) {
     super(props);
 
+    let randomUserId = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
     this.state = {
+      ownFace: {
+        name: randomUserId,
+        image: null
+      },
       faces: [],
       imageSize: {
         width: 640,
@@ -26,12 +32,10 @@ class Office extends React.Component {
     // we can use to maximise the screen real-estate
     window.onresize = this.adjustImageSize;
 
-    let randomUserId = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
     this.socket = new FaceSocket(randomUserId);
     this.socket.start({
         joined: (resp) => {
           console.log("Joined channel for image updates");
-          this.updateSnapshot();
         },
         failed_join: (resp) => {
           console.error("Failed to join update channel");
@@ -42,12 +46,15 @@ class Office extends React.Component {
 
     // We update the photo once per minute:
     // 60 * 1000
-    setInterval(this.updateSnapshot, 60000);
+    setInterval(this.updateSnapshot, 10000);
   }
   updateSnapshot() {
     console.log("Updating photo");
     Webcam.snap((newImage) => {
       this.socket.update(newImage);
+      let ownFace = this.state.ownFace;
+      ownFace.image = newImage;
+      this.setState({ownFace: ownFace});
     });
   }
   handleRemoteFaceUpdate(payload) {
@@ -103,7 +110,7 @@ class Office extends React.Component {
   render() {
     return (
       <div id="page">
-        <Faces {...this.state} />
+        <Faces {...this.state} handleUpdateSelfie={this.updateSnapshot} />
       </div>
     );
   }
@@ -116,6 +123,7 @@ class Faces extends React.Component {
     });
     return (
       <div id="all-faces">
+        <Face key="my_face" face={this.props.ownFace} {...this.props} />
         {faces}
       </div>
     );
@@ -123,13 +131,24 @@ class Faces extends React.Component {
 }
 
 class Face extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+  onClick() {
+    console.log("Clicked");
+    this.props.handleUpdateSelfie();
+  }
   render() {
     let imageSize = {
       height: this.props.imageSize.height,
       width: this.props.imageSize.width,
     };
     return (
-      <img style={imageSize} src={this.props.face.image} className="face-image" />
+      <img style={imageSize}
+          src={this.props.face.image} className="face-image"
+          onClick={this.props.handleUpdateSelfie}
+          />
     );
   }
 }
