@@ -131,15 +131,12 @@ class Faces extends React.Component {
 }
 
 class Face extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onClick = this.onClick.bind(this);
-  }
-  onClick() {
-    console.log("Clicked");
-    this.props.handleUpdateSelfie();
-  }
   render() {
+    // If we don't have any data yet,
+    // then don't render the face
+    if (this.props.face.image == null) {
+      return null;
+    }
     let imageSize = {
       height: this.props.imageSize.height,
       width: this.props.imageSize.width,
