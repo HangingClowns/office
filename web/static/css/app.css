@@ -87,7 +87,33 @@ div#office-faces {
 }
 
 .face-image {
-  display: table;
+  display: block;
   float: left;
-  margin: 0px;
+  margin: 0;
+  padding: 0;
+}
+.face-image {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+.face-image div.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.face-image div.overlay:hover {
+  background-color: rgba(91, 192, 168, 0.2);
+}
+.face-image.me div.overlay:active {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+.face-image div.name {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  padding: 2px;
+  background-color: rgba(255, 255, 255, 0.4);
+  color: black;
+  font-size: 0.8em;
 }

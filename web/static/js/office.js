@@ -123,7 +123,7 @@ class Faces extends React.Component {
     });
     return (
       <div id="all-faces">
-        <Face key="my_face" face={this.props.ownFace} {...this.props} />
+        <Face key="my_face" isMe="true" face={this.props.ownFace} {...this.props} />
         {faces}
       </div>
     );
@@ -141,11 +141,18 @@ class Face extends React.Component {
       height: this.props.imageSize.height,
       width: this.props.imageSize.width,
     };
+    let classNames = "face-image";
+    if (this.props.isMe == "true") {
+      classNames = classNames + " me";
+    }
     return (
-      <img style={imageSize}
-          src={this.props.face.image} className="face-image"
-          onClick={this.props.handleUpdateSelfie}
-          />
+      <div className={classNames} style={imageSize}
+          onClick={this.props.handleUpdateSelfie}>
+        <img style={imageSize}
+            src={this.props.face.image} />
+        <div className="overlay" style={imageSize} />
+        <div className="name">{this.props.face.name}</div>
+      </div>
     );
   }
 }
