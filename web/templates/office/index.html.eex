@@ -1,0 +1,11 @@
+<div id="office-faces">
+</div>
+
+<script>
+  window.pageConfig = {
+    onLoad: function(App) {
+      let props = {};
+      App.officePage(props);
+    }
+  };
+</script>

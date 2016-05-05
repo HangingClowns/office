@@ -1,0 +1,5 @@
+<div class="padded-content">
+  <h1>Login failed</h1>
+
+  <p>We couldn't log you in. Did you reject the auth-request? Feel free to try again</p>
+</div>

@@ -1,0 +1,98 @@
+/* @override
+	http://localhost:4000/css/app.css
+	http://localhost:4000/css/app.css?vsn=1462468006
+*/
+
+body {
+  padding: 0;
+}
+
+/********************************************************************
+ * CSS related to top menu bar
+ *******************************************************************/
+
+div#top-menu {
+  position: absolute;
+  width: 100%;
+  display: block;
+  height: 40px;
+  top: 0;
+  padding: 0px;
+  background-color: black;
+}
+
+div#top-menu div#auth-links a {
+  margin: 0;
+  float: right;
+  padding: 11px;
+  display: block;
+  text-decoration: none;
+  background-color: #ccc;
+  color: black;
+}
+
+div#top-menu div#auth-links a:hover {
+  text-decoration: none;
+  color: black;
+  background-color: white;
+}
+
+div#top-menu div#logo {
+  margin: 0;
+  float: left;
+  padding: 11px;
+  display: block;
+  text-decoration: none;
+  color: white;
+}
+
+
+/********************************************************************
+ * CSS related to the main section of the site
+ *******************************************************************/
+
+div#main-content {
+  margin-top: 40px;
+  padding: 10px;
+  background-color: #505750;
+  width: 100%;
+}
+
+div.padded-content {
+  padding: 20px;
+}
+
+
+/********************************************************************
+ * CSS related to the office faces app section
+ *******************************************************************/
+
+div#office-faces {
+  display: block;
+
+  width: 100%;
+
+  /* Firefox */
+  height: -moz-calc(100vh - 40px);
+  /* WebKit */
+  height: -webkit-calc(100vh - 40px);
+  /* Opera */
+  height: -o-calc(100vh - 40px);
+  /* Standard */
+  height: calc(100vh - 40px);
+}
+
+#live-face-image {
+  display: table;
+  width: 0;
+  height: 0;
+  float: right;
+  position: absolute;
+  top: -100px;
+}
+
+.face-image {
+  display: table;
+  float: left;
+  margin: 0px;
+}

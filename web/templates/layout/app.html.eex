@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Aircloak office</title>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body>
+    <div id="top-menu">
+      <div id="logo">
+        Welcome to Aircloak
+      </div>
+      <div id="live-face-image"></div>
+      <div id="auth-links">
+      <%= if Guardian.Plug.current_resource(@conn) do %>
+        <%= link "Sign out", to: "/auth/logout", method: :delete %>
+      <% else %>
+        <%= link "Login", to: "/auth/github" %>
+      <% end %>
+      </div>
+    </div>
+    <div id="main-content">
+      <%= render @view_module, @view_template, assigns %>
+    </div>
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

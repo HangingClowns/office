@@ -1,0 +1,6 @@
+<div class="padded-content">
+  <h1>Services coming shortly</h1>
+
+  <img src="<%= @user["avatar_url"] %>" width="100px" />
+  <p>Hello there, <%= @user["name"] %></p>
+</div>
