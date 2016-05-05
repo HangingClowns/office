@@ -8,11 +8,9 @@ class Office extends React.Component {
   constructor(props) {
     super(props);
 
-    let randomUserId = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
-
     this.state = {
       ownFace: {
-        name: randomUserId,
+        name: props.name
         image: null
       },
       faces: [],
@@ -32,7 +30,7 @@ class Office extends React.Component {
     // we can use to maximise the screen real-estate
     window.onresize = this.adjustImageSize;
 
-    this.socket = new FaceSocket(randomUserId);
+    this.socket = new FaceSocket(props.name);
     this.socket.start({
         joined: (resp) => {
           console.log("Joined channel for image updates");
@@ -46,7 +44,7 @@ class Office extends React.Component {
 
     // We update the photo once per minute:
     // 60 * 1000
-    setInterval(this.updateSnapshot, 60000);
+    setInterval(this.updateSnapshot, 1000);
   }
   updateSnapshot() {
     console.log("Updating photo");
