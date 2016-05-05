@@ -70,11 +70,11 @@ class Office extends React.Component {
     }
   }
   adjustImageSizeWithFaces(faces) {
-    let imageSize = calculateImageSize(faces.length);
+    let imageSize = calculateImageSize(faces.length + 1);
     this.setState({faces: faces, imageSize: imageSize});
   }
   adjustImageSize() {
-    let imageSize = calculateImageSize(this.state.faces.length);
+    let imageSize = calculateImageSize(this.state.faces.length + 1);
     this.setState({imageSize: imageSize});
   }
   handleUserLeft(payload) {
