@@ -108,6 +108,22 @@ div#office-faces {
 .face-image.me div.overlay:active {
   background-color: rgba(255, 255, 255, 0.4);
 }
+.face-image div.overlay.dnd {
+  background-color: rgba(255, 0, 0, 0.5);
+}
+.face-image div.overlay span {
+  display: none;
+}
+.face-image div.overlay.busy span {
+  position: relative;
+  margin: 10px;
+  top: 20px;
+  padding: 10px;
+  background-color: red;
+  font-size: 3em;
+  color: #800000;
+}
+
 .face-image div.name {
   position: absolute;
   bottom: 10px;

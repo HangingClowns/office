@@ -17,6 +17,7 @@ class Office extends React.Component {
 
       ownFace: {
         name: props.name,
+        dnd: false,
         image: null
       },
       faces: [],
@@ -213,12 +214,18 @@ class Face extends React.Component {
     if (this.props.isMe == "true") {
       classNames = classNames + " me";
     }
+    let overlayClasses = "overlay";
+    if (this.props.face.dnd) {
+      overlayClasses += " dnd";
+    }
     return (
       <div className={classNames} style={imageSize}
           onClick={this.props.handleUpdateSelfie}>
         <img style={imageSize}
             src={this.props.face.image} />
-        <div className="overlay" style={imageSize} />
+        <div className={overlayClasses} style={imageSize}>
+          <span class="dnd">DND</span>
+        </div>
         <div className="name">{this.props.face.name}</div>
       </div>
     );
