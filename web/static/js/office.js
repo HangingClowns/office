@@ -12,6 +12,9 @@ class Office extends React.Component {
       // Online status - "connecting", "offline", "online"
       online: "connecting",
 
+      // Set to false if we don't have camera access
+      camera: true,
+
       ownFace: {
         name: props.name,
         image: null
@@ -35,6 +38,10 @@ class Office extends React.Component {
   }
 
   updateSnapshot() {
+    if (!this.state.camera) {
+      console.log("We don't have camera access, or camera");
+      return;
+    }
     console.log("Updating photo");
     Webcam.snap((newImage) => {
       this.socket.update(newImage);
@@ -87,13 +94,16 @@ class Office extends React.Component {
     });
     Webcam.on("load", () => {
       console.log("Loaded...");
+      this.setState({camera: true});
       this.updateSnapshot();
     });
     Webcam.on("live", () => {
       console.log("Live...");
+      this.setState({camera: true});
       this.updateSnapshot();
     });
     Webcam.on("error", () => {
+      this.setState({camera: false});
       console.log("Error...");
     });
 
@@ -135,6 +145,9 @@ class Office extends React.Component {
 
 class OnlineScreen extends React.Component {
   message() {
+    if (!this.props.camera) {
+      return "This application needs access to your camera to function";
+    }
     if (this.props.online == "connecting") {
       return "Trying to connect to the server";
     }
@@ -143,6 +156,9 @@ class OnlineScreen extends React.Component {
     }
   }
   header() {
+    if (!this.props.camera) {
+      return "Oh oh!";
+    }
     if (this.props.online == "connecting") {
       return "Connecting...";
     }
@@ -154,7 +170,7 @@ class OnlineScreen extends React.Component {
     return this.props.online == "online";
   }
   render() {
-    if (this.isOnline()) {
+    if (this.isOnline() && this.props.camera) {
       return null;
     }
     return (
