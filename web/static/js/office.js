@@ -127,6 +127,42 @@ class Office extends React.Component {
     return (
       <div id="page">
         <Faces {...this.state} handleUpdateSelfie={this.updateSnapshot} />
+        <OnlineScreen {...this.state} />
+      </div>
+    );
+  }
+}
+
+class OnlineScreen extends React.Component {
+  message() {
+    if (this.props.online == "connecting") {
+      return "Trying to connect to the server";
+    }
+    if (this.props.online == "offline") {
+      return "Darn! You seem to be offline. Will atempt to reconnect";
+    }
+  }
+  header() {
+    if (this.props.online == "connecting") {
+      return "Connecting...";
+    }
+    if (this.props.online == "offline") {
+      return "Problems abound!";
+    }
+  }
+  isOnline() {
+    return this.props.online == "online";
+  }
+  render() {
+    if (this.isOnline()) {
+      return null;
+    }
+    return (
+      <div id="error-screen">
+        <div id="error-text">
+          <h1>{this.header()}</h1>
+          <p>{this.message()}</p>
+        </div>
       </div>
     );
   }

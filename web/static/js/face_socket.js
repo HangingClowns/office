@@ -29,6 +29,7 @@ export class FaceSocket {
       .receive("error", resp => {
         console.log(`Failed at joining: ${resp}. Will re-attempt`);
         this.callbacks.failed();
+        this.socket.disconnect();
         this.scheduleReconnet();
       })
     channel.on("update", payload => { this.callbacks.update(payload) });
@@ -36,11 +37,13 @@ export class FaceSocket {
 
     channel.onError((e) => {
       this.callbacks.failed();
+      this.socket.disconnect();
       this.scheduleReconnet();
     });
     channel.onClose((e) => {
       console.log("Channel closed", e);
       this.callbacks.failed();
+      this.socket.disconnect();
       this.scheduleReconnet();
     });
 
