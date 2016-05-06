@@ -9,6 +9,9 @@ class Office extends React.Component {
     super(props);
 
     this.state = {
+      // Online status - "connecting", "offline", "online"
+      online: "connecting",
+
       ownFace: {
         name: props.name,
         image: null
@@ -29,23 +32,8 @@ class Office extends React.Component {
     // When the window resizes, we need to calculate the image sizes
     // we can use to maximise the screen real-estate
     window.onresize = this.adjustImageSize;
-
-    this.socket = new FaceSocket(props.name);
-    this.socket.start({
-        joined: (resp) => {
-          console.log("Joined channel for image updates");
-        },
-        failed_join: (resp) => {
-          console.error("Failed to join update channel");
-        },
-        update: this.handleRemoteFaceUpdate,
-        left: this.handleUserLeft,
-      });
-
-    // We update the photo once per minute:
-    // 60 * 1000
-    setInterval(this.updateSnapshot, 60000);
   }
+
   updateSnapshot() {
     console.log("Updating photo");
     Webcam.snap((newImage) => {
@@ -55,6 +43,7 @@ class Office extends React.Component {
       this.setState({ownFace: ownFace});
     });
   }
+
   handleRemoteFaceUpdate(payload) {
     console.log("New photo received");
     let allFaces = this.state.faces;
@@ -67,14 +56,17 @@ class Office extends React.Component {
       this.adjustImageSizeWithFaces(allFaces);
     }
   }
+
   adjustImageSizeWithFaces(faces) {
     let imageSize = calculateImageSize(faces.length + 1);
     this.setState({faces: faces, imageSize: imageSize});
   }
+
   adjustImageSize() {
     let imageSize = calculateImageSize(this.state.faces.length + 1);
     this.setState({imageSize: imageSize});
   }
+
   handleUserLeft(payload) {
     console.log(`user left: ${payload.name}`);
     let allFaces = this.state.faces;
@@ -83,6 +75,7 @@ class Office extends React.Component {
     });
     this.adjustImageSizeWithFaces(facesWithoutLeavingUser);
   }
+
   componentDidMount() {
     Webcam.attach("#live-face-image");
     Webcam.set({
@@ -103,11 +96,32 @@ class Office extends React.Component {
     Webcam.on("error", () => {
       console.log("Error...");
     });
-    this.updateSnapshot();
-    this.adjustImageSize();
-    // The image doesn't show if captured immediately.
-    // Wait a while before taking it.
-    setTimeout(this.updateSnapshot, 1000);
+
+    this.socket = new FaceSocket(this.state.ownFace.name);
+    this.socket.start({
+        connecting: () => {
+          console.log("Connecting to server");
+          this.setState({online: "connecting"});
+        },
+        joined: () => {
+          this.setState({online: "online"});
+          console.log("Joined channel for image updates");
+          this.adjustImageSize();
+          // The image doesn't show if captured immediately.
+          // Wait a while before taking it.
+          setTimeout(this.updateSnapshot, 1000);
+        },
+        failed: () => {
+          this.setState({online: "offline"});
+          console.error("Failed to join update channel");
+        },
+        update: this.handleRemoteFaceUpdate,
+        left: this.handleUserLeft,
+      });
+
+    // We update the photo once per minute:
+    // 60 * 1000
+    setInterval(this.updateSnapshot, 60000);
   }
   render() {
     return (
