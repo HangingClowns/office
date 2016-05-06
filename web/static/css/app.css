@@ -12,11 +12,12 @@ div#top-menu {
   display: block;
   height: 40px;
   top: 0;
+  left: 0;
   padding: 0px;
   background-color: black;
 }
 
-div#top-menu div#auth-links a {
+div#top-menu div#links a {
   margin: 0;
   float: right;
   padding: 11px;
@@ -26,7 +27,7 @@ div#top-menu div#auth-links a {
   color: black;
 }
 
-div#top-menu div#auth-links a:hover {
+div#top-menu div#links a:hover {
   text-decoration: none;
   color: black;
   background-color: white;
@@ -112,9 +113,10 @@ div#office-faces {
   background-color: rgba(255, 0, 0, 0.5);
 }
 .face-image div.overlay span {
-  display: none;
+  visibility: hidden;
 }
-.face-image div.overlay.busy span {
+.face-image div.overlay.dnd span {
+  visibility: visible;
   position: relative;
   margin: 10px;
   top: 20px;

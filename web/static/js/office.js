@@ -3,6 +3,9 @@ import ReactDOM from "react-dom"
 import Webcam from "webcamjs"
 import { FaceSocket } from './face_socket'
 import { calculateImageSize } from './image-size-calculator'
+import { Faces } from './faces'
+import { OverlayScreen } from './overlay'
+import { Menu } from './menu'
 
 class Office extends React.Component {
   constructor(props) {
@@ -32,10 +35,17 @@ class Office extends React.Component {
     this.handleUserLeft = this.handleUserLeft.bind(this);
     this.adjustImageSize = this.adjustImageSize.bind(this);
     this.adjustImageSizeWithFaces = this.adjustImageSizeWithFaces.bind(this);
+    this.toggleDnd = this.toggleDnd.bind(this);
 
     // When the window resizes, we need to calculate the image sizes
     // we can use to maximise the screen real-estate
     window.onresize = this.adjustImageSize;
+  }
+
+  toggleDnd() {
+    let ownFace = this.state.ownFace;
+    ownFace.dnd = ! ownFace.dnd;
+    this.setState({ownFace: ownFace});
   }
 
   updateSnapshot() {
@@ -137,100 +147,14 @@ class Office extends React.Component {
   render() {
     return (
       <div id="page">
+        <Menu {...this.state} toggleDnd={this.toggleDnd} />
         <Faces {...this.state} handleUpdateSelfie={this.updateSnapshot} />
-        <OnlineScreen {...this.state} />
+        <OverlayScreen {...this.state} />
       </div>
     );
   }
 }
 
-class OnlineScreen extends React.Component {
-  message() {
-    if (!this.props.camera) {
-      return "This application needs access to your camera to function";
-    }
-    if (this.props.online == "connecting") {
-      return "Trying to connect to the server";
-    }
-    if (this.props.online == "offline") {
-      return "Darn! You seem to be offline. Will atempt to reconnect";
-    }
-  }
-  header() {
-    if (!this.props.camera) {
-      return "Oh oh!";
-    }
-    if (this.props.online == "connecting") {
-      return "Connecting...";
-    }
-    if (this.props.online == "offline") {
-      return "Problems abound!";
-    }
-  }
-  isOnline() {
-    return this.props.online == "online";
-  }
-  render() {
-    if (this.isOnline() && this.props.camera) {
-      return null;
-    }
-    return (
-      <div id="error-screen">
-        <div id="error-text">
-          <h1>{this.header()}</h1>
-          <p>{this.message()}</p>
-        </div>
-      </div>
-    );
-  }
-}
-
-class Faces extends React.Component {
-  render() {
-    let faces = this.props.faces.map((face) => {
-      return (<Face key={face.name} face={face} imageSize={this.props.imageSize} />);
-    });
-    return (
-      <div id="all-faces">
-        <Face key="my_face" isMe="true" face={this.props.ownFace} {...this.props} />
-        {faces}
-      </div>
-    );
-  }
-}
-
-class Face extends React.Component {
-  render() {
-    // If we don't have any data yet,
-    // then don't render the face
-    if (this.props.face.image == null) {
-      return null;
-    }
-    let imageSize = {
-      height: this.props.imageSize.height,
-      width: this.props.imageSize.width,
-    };
-    let classNames = "face-image";
-    if (this.props.isMe == "true") {
-      classNames = classNames + " me";
-    }
-    let overlayClasses = "overlay";
-    if (this.props.face.dnd) {
-      overlayClasses += " dnd";
-    }
-    return (
-      <div className={classNames} style={imageSize}
-          onClick={this.props.handleUpdateSelfie}>
-        <img style={imageSize}
-            src={this.props.face.image} />
-        <div className={overlayClasses} style={imageSize}>
-          <span class="dnd">DND</span>
-        </div>
-        <div className="name">{this.props.face.name}</div>
-      </div>
-    );
-  }
-}
 
 exports.Office = (data) => {
   ReactDOM.render(
