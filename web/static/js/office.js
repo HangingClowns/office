@@ -104,6 +104,10 @@ class Office extends React.Component {
       console.log("Error...");
     });
     this.updateSnapshot();
+    this.adjustImageSize();
+    // The image doesn't show if captured immediately.
+    // Wait a while before taking it.
+    setTimeout(this.updateSnapshot, 1000);
   }
   render() {
     return (
