@@ -33,6 +33,7 @@ export class FaceSocket {
         this.scheduleReconnet();
       })
     channel.on("update", payload => { this.callbacks.update(payload) });
+    channel.on("dnd", payload => { this.callbacks.dnd(payload) });
     channel.on("user_left", payload => { this.callbacks.left(payload) });
 
     channel.onError((e) => {
@@ -58,5 +59,9 @@ export class FaceSocket {
 
   update(image) {
     this.channel.push("update", {image: image});
+  }
+
+  setDnd(state) {
+    this.channel.push("dnd", {dnd: state});
   }
 }

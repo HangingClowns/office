@@ -20,6 +20,12 @@ defmodule Aircloak.FaceChannel do
     {:noreply, socket}
   end
 
+  def handle_in("dnd", %{"dnd" => state}, socket) do
+    Logger.info("Marking user #{socket.assigns.name} as DND")
+    broadcast! socket, "dnd", %{name: socket.assigns.name, state: state}
+    {:noreply, socket}
+  end
+
   intercept ["update"]
   @doc false
   def handle_out("update", %{name: name} = update, socket) do

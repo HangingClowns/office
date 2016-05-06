@@ -36,6 +36,7 @@ class Office extends React.Component {
     this.adjustImageSize = this.adjustImageSize.bind(this);
     this.adjustImageSizeWithFaces = this.adjustImageSizeWithFaces.bind(this);
     this.toggleDnd = this.toggleDnd.bind(this);
+    this.handleDndUpdate = this.handleDndUpdate.bind(this);
 
     // When the window resizes, we need to calculate the image sizes
     // we can use to maximise the screen real-estate
@@ -46,6 +47,7 @@ class Office extends React.Component {
     let ownFace = this.state.ownFace;
     ownFace.dnd = ! ownFace.dnd;
     this.setState({ownFace: ownFace});
+    this.socket.setDnd(ownFace.dnd);
   }
 
   updateSnapshot() {
@@ -60,6 +62,16 @@ class Office extends React.Component {
       ownFace.image = newImage;
       this.setState({ownFace: ownFace});
     });
+  }
+
+  handleDndUpdate(payload) {
+    console.log("User toggled DND");
+    let allFaces = this.state.faces;
+    let existingPerson = allFaces.find((face) => {return face.name == payload.name});
+    if (existingPerson != null) {
+      existingPerson.dnd = payload.state;
+      this.setState({faces: allFaces});
+    }
   }
 
   handleRemoteFaceUpdate(payload) {
@@ -138,6 +150,7 @@ class Office extends React.Component {
         },
         update: this.handleRemoteFaceUpdate,
         left: this.handleUserLeft,
+        dnd: this.handleDndUpdate
       });
 
     // We update the photo once per minute:
