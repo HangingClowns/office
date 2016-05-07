@@ -29,7 +29,7 @@ defmodule Aircloak.FaceChannel do
   intercept ["update"]
   @doc false
   def handle_out("update", %{name: name} = update, socket) do
-    if name != socket.assigns.name do
+    if (name != socket.assigns.name) or (Mix.env == :dev) do
       push socket, "update", update
     end
     {:noreply, socket}
