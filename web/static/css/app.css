@@ -25,12 +25,17 @@ div#top-menu div#links a {
   text-decoration: none;
   background-color: #ccc;
   color: black;
+  border-left: 1px solid black;
 }
 
 div#top-menu div#links a:hover {
   text-decoration: none;
   color: black;
   background-color: white;
+}
+
+div#top-menu div#links a.active {
+  background-color: green;
 }
 
 div#top-menu div#logo {

@@ -18,6 +18,9 @@ class Office extends React.Component {
       // Set to false if we don't have camera access
       camera: true,
 
+      // Whether or not we should pause snapshotting or not
+      pause: false,
+
       ownFace: {
         name: props.name,
         dnd: false,
@@ -31,11 +34,13 @@ class Office extends React.Component {
     };
 
     this.updateSnapshot = this.updateSnapshot.bind(this);
+    this.timedUpdateSnapshot = this.timedUpdateSnapshot.bind(this);
     this.handleRemoteFaceUpdate = this.handleRemoteFaceUpdate.bind(this);
     this.handleUserLeft = this.handleUserLeft.bind(this);
     this.adjustImageSize = this.adjustImageSize.bind(this);
     this.adjustImageSizeWithFaces = this.adjustImageSizeWithFaces.bind(this);
     this.toggleDnd = this.toggleDnd.bind(this);
+    this.togglePauseSnaptshot = this.togglePauseSnaptshot.bind(this);
     this.handleDndUpdate = this.handleDndUpdate.bind(this);
 
     // When the window resizes, we need to calculate the image sizes
@@ -43,11 +48,22 @@ class Office extends React.Component {
     window.onresize = this.adjustImageSize;
   }
 
+  togglePauseSnaptshot() {
+    console.log("Toggling pausing");
+    this.setState({pause: !!!this.state.pause});
+  }
+
   toggleDnd() {
     let ownFace = this.state.ownFace;
     ownFace.dnd = ! ownFace.dnd;
     this.setState({ownFace: ownFace});
     this.socket.setDnd(ownFace.dnd);
+  }
+
+  timedUpdateSnapshot() {
+    if (! this.state.pause) {
+      this.updateSnapshot();
+    }
   }
 
   updateSnapshot() {
@@ -142,7 +158,7 @@ class Office extends React.Component {
           this.adjustImageSize();
           // The image doesn't show if captured immediately.
           // Wait a while before taking it.
-          setTimeout(this.updateSnapshot, 1000);
+          setTimeout(this.timedUpdateSnapshot, 1000);
         },
         failed: () => {
           this.setState({online: "offline"});
@@ -155,12 +171,13 @@ class Office extends React.Component {
 
     // We update the photo once per minute:
     // 60 * 1000
-    setInterval(this.updateSnapshot, 60000);
+    setInterval(this.timedUpdateSnapshot, 1000);
   }
   render() {
     return (
       <div id="page">
-        <Menu {...this.state} toggleDnd={this.toggleDnd} />
+        <Menu {...this.state} toggleDnd={this.toggleDnd}
+            togglePauseSnaptshot={this.togglePauseSnaptshot} />
         <Faces {...this.state} handleUpdateSelfie={this.updateSnapshot} />
         <OverlayScreen {...this.state} />
       </div>

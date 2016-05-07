@@ -10,6 +10,7 @@ export class Menu extends React.Component {
         <div id="live-face-image"></div>
         <div id="links">
           <DndButton {...this.props} />
+          <PauseButton {...this.props} />
         </div>
       </div>
     );
@@ -25,7 +26,27 @@ class DndButton extends React.Component {
       text = "Enabled DND";
     }
     return (
-      <a onClick={this.props.toggleDnd}>{text}</a>
+      <a onClick={this.props.toggleDnd}
+          className={this.props.ownFace.dnd ? 'active' : ''}>
+        {text}
+      </a>
+    );
+  }
+}
+
+class PauseButton extends React.Component {
+  render() {
+    let text = "";
+    if (this.props.pause) {
+      text = "Unpause snapshots";
+    } else {
+      text = "Pause snapshots";
+    }
+    return (
+      <a onClick={this.props.togglePauseSnaptshot}
+          className={this.props.pause ? 'active' : ''}>
+        {text}
+      </a>
     );
   }
 }
