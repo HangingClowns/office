@@ -9,7 +9,7 @@ export class OverlayScreen extends React.Component {
       return "Trying to connect to the server";
     }
     if (this.props.online == "offline") {
-      return "Darn! You seem to be offline. Will atempt to reconnect";
+      return "Darn! You seem to be offline. Will attempt to reconnect";
     }
   }
   header() {
