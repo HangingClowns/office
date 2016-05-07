@@ -100,6 +100,11 @@ class Office extends React.Component {
     } else {
       allFaces.push(payload);
       this.adjustImageSizeWithFaces(allFaces);
+      // We received the image from someone we don't yet know!
+      // That means they are new, and don't yet have our picture!
+      // How sad, let's upload our current picture again,
+      // so they get it in their feed too:
+      this.socket.update(this.state.ownFace.image);
     }
   }
 
