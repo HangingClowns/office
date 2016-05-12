@@ -4,7 +4,7 @@
 <script>
   window.pageConfig = {
     onLoad: function(App) {
-      let props = {"name": "<%= Guardian.Plug.current_resource(@conn)["name"] %>"};
+      var props = {"name": "<%= Guardian.Plug.current_resource(@conn)["name"] %>"};
       App.officePage(props);
     }
   };
