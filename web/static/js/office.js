@@ -42,6 +42,7 @@ class Office extends React.Component {
     this.toggleDnd = this.toggleDnd.bind(this);
     this.togglePauseSnaptshot = this.togglePauseSnaptshot.bind(this);
     this.handleDndUpdate = this.handleDndUpdate.bind(this);
+    this.setupCamera = this.setupCamera.bind(this);
 
     // When the window resizes, we need to calculate the image sizes
     // we can use to maximise the screen real-estate
@@ -49,7 +50,13 @@ class Office extends React.Component {
   }
 
   togglePauseSnaptshot() {
-    console.log("Toggling pausing");
+    if (! this.state.pause) {
+      console.log("Activating pause, resetting webcam");
+      Webcam.reset();
+    } else {
+      console.log("Activating photo taking again, after pause");
+      this.setupCamera();
+    }
     this.setState({pause: !!!this.state.pause});
   }
 
@@ -127,7 +134,7 @@ class Office extends React.Component {
     this.adjustImageSizeWithFaces(facesWithoutLeavingUser);
   }
 
-  componentDidMount() {
+  setupCamera() {
     Webcam.attach("#live-face-image");
     Webcam.set({
       fps: 1,
@@ -150,6 +157,10 @@ class Office extends React.Component {
       this.setState({camera: false});
       console.log("Error...");
     });
+  }
+
+  componentDidMount() {
+    this.setupCamera();
 
     this.socket = new FaceSocket(this.state.ownFace.name);
     this.socket.start({
@@ -178,6 +189,7 @@ class Office extends React.Component {
     // 60 * 1000
     setInterval(this.timedUpdateSnapshot, 60000);
   }
+
   render() {
     return (
       <div id="page">
