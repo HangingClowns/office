@@ -30,8 +30,14 @@ class Face extends React.Component {
       classNames = classNames + " me";
     }
     let overlayClasses = "overlay";
+    let overlayTitle = "";
     if (this.props.face.dnd) {
-      overlayClasses += " dnd";
+      overlayClasses += " visible dnd";
+      overlayTitle = "DND";
+    }
+    if (this.props.face.pause) {
+      overlayClasses += " visible pause";
+      overlayTitle = "PAUSED";
     }
     return (
       <div className={classNames} style={imageSize}
@@ -39,7 +45,7 @@ class Face extends React.Component {
         <img style={imageSize}
             src={this.props.face.image} />
         <div className={overlayClasses} style={imageSize}>
-          <span class="dnd">DND</span>
+          <span class="dnd">{overlayTitle}</span>
         </div>
         <div className="name">{this.props.face.name}</div>
       </div>
