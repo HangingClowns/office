@@ -62,6 +62,10 @@ export class FaceSocket {
   }
 
   setDnd(state) {
-    this.channel.push("dnd", {dnd: state});
+    this.channel.push("state:dnd", {state: state});
+  }
+
+  setPause(state) {
+    this.channel.push("state:pause", {state: state});
   }
 }

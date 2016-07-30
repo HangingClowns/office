@@ -117,18 +117,27 @@ div#office-faces {
 .face-image div.overlay.dnd {
   background-color: rgba(255, 0, 0, 0.5);
 }
+.face-image div.overlay.pause {
+  background-color: rgba(0, 0, 255, 0.5);
+}
 .face-image div.overlay span {
   visibility: hidden;
 }
-.face-image div.overlay.dnd span {
+.face-image div.overlay.visible span {
   visibility: visible;
   position: relative;
   margin: 10px;
   top: 20px;
   padding: 10px;
-  background-color: red;
   font-size: 3em;
+}
+.face-image div.overlay.visible.dnd span {
+  background-color: red;
   color: #800000;
+}
+.face-image div.overlay.visible.pause span {
+  background-color: blue;
+  color: white;
 }
 
 .face-image div.name {

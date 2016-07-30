@@ -24,12 +24,13 @@ class Office extends React.Component {
       ownFace: {
         name: props.name,
         dnd: false,
-        image: null
+        pause: false,
+        image: null,
       },
       faces: [],
       imageSize: {
         width: 640,
-        height: 480
+        height: 480,
       }
     };
 
@@ -42,6 +43,8 @@ class Office extends React.Component {
     this.toggleDnd = this.toggleDnd.bind(this);
     this.togglePauseSnaptshot = this.togglePauseSnaptshot.bind(this);
     this.handleDndUpdate = this.handleDndUpdate.bind(this);
+    this.handlePauseUpdate = this.handlePauseUpdate.bind(this);
+    this.setupCamera = this.setupCamera.bind(this);
 
     // When the window resizes, we need to calculate the image sizes
     // we can use to maximise the screen real-estate
@@ -49,8 +52,18 @@ class Office extends React.Component {
   }
 
   togglePauseSnaptshot() {
-    console.log("Toggling pausing");
-    this.setState({pause: !!!this.state.pause});
+    let ownFace = this.state.ownFace;
+    ownFace.pause = ! ownFace.pause;
+    this.setState({ownFace: ownFace});
+    this.socket.setPause(ownFace.pause);
+
+    if (ownFace.pause) {
+      console.log("Activating pause, resetting webcam");
+      Webcam.reset();
+    } else {
+      console.log("Activating photo taking again, after pause");
+      this.setupCamera();
+    }
   }
 
   toggleDnd() {
@@ -61,7 +74,7 @@ class Office extends React.Component {
   }
 
   timedUpdateSnapshot() {
-    if (! this.state.pause) {
+    if (! this.state.ownFace.pause) {
       this.updateSnapshot();
     }
   }
@@ -70,6 +83,10 @@ class Office extends React.Component {
     if (!this.state.camera) {
       console.log("We don't have camera access, or camera");
       return;
+    }
+    if (this.state.ownFace.pause) {
+      console.log("Cannot update our own photo when in pause mode");
+      return
     }
     console.log("Updating photo");
     Webcam.snap((newImage) => {
@@ -80,12 +97,21 @@ class Office extends React.Component {
     });
   }
 
+  handlePauseUpdate(payload) {
+    console.log("User toggled pause");
+    this.updateStateForFaceWithCallback(payload.name, face => face.pause = payload.state);
+  }
+
   handleDndUpdate(payload) {
     console.log("User toggled DND");
+    this.updateStateForFaceWithCallback(payload.name, face => face.dnd = payload.state);
+  }
+
+  updateStateForFaceWithCallback(name, callback) {
     let allFaces = this.state.faces;
-    let existingPerson = allFaces.find((face) => {return face.name == payload.name});
+    let existingPerson = allFaces.find((face) => {return face.name == name});
     if (existingPerson != null) {
-      existingPerson.dnd = payload.state;
+      callback(existingPerson);
       this.setState({faces: allFaces});
     }
   }
@@ -127,7 +153,7 @@ class Office extends React.Component {
     this.adjustImageSizeWithFaces(facesWithoutLeavingUser);
   }
 
-  componentDidMount() {
+  setupCamera() {
     Webcam.attach("#live-face-image");
     Webcam.set({
       fps: 1,
@@ -150,6 +176,10 @@ class Office extends React.Component {
       this.setState({camera: false});
       console.log("Error...");
     });
+  }
+
+  componentDidMount() {
+    this.setupCamera();
 
     this.socket = new FaceSocket(this.state.ownFace.name);
     this.socket.start({
@@ -171,13 +201,15 @@ class Office extends React.Component {
         },
         update: this.handleRemoteFaceUpdate,
         left: this.handleUserLeft,
-        dnd: this.handleDndUpdate
+        dnd: this.handleDndUpdate,
+        pause: this.handlePauseUpdate,
       });
 
     // We update the photo once per minute:
     // 60 * 1000
     setInterval(this.timedUpdateSnapshot, 60000);
   }
+
   render() {
     return (
       <div id="page">
