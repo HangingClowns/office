@@ -165,17 +165,23 @@ class Office extends React.Component {
     Webcam.on("load", () => {
       console.log("Loaded...");
       this.setState({camera: true});
-      this.updateSnapshot();
+      this.delayedSnapshot();
     });
     Webcam.on("live", () => {
       console.log("Live...");
       this.setState({camera: true});
-      this.updateSnapshot();
+      this.delayedSnapshot();
     });
     Webcam.on("error", () => {
       this.setState({camera: false});
       console.log("Error...");
     });
+    this.delayedSnapshot();
+  }
+
+  delayedSnapshot() {
+    console.log("Scheduling a delayed snapshot");
+    setTimeout(this.updateSnapshot, 2000);
   }
 
   componentDidMount() {
