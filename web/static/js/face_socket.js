@@ -8,11 +8,13 @@ export class FaceSocket {
     this.start = this.start.bind(this);
     this.connect = this.connect.bind(this);
   }
+
   start(callbacks) {
     // Store the callbacks, so we can reset them later.
     this.callbacks = callbacks;
     this.connect();
   }
+
   connect() {
     // Report that we are in the process of connecting
     this.callbacks.connecting();
@@ -41,6 +43,7 @@ export class FaceSocket {
       this.socket.disconnect();
       this.scheduleReconnet();
     });
+
     channel.onClose((e) => {
       console.log("Channel closed", e);
       this.callbacks.failed();
