@@ -36,6 +36,7 @@ export class FaceSocket {
       })
     channel.on("update", payload => { this.callbacks.update(payload) });
     channel.on("dnd", payload => { this.callbacks.dnd(payload) });
+    channel.on("pause", payload => { this.callbacks.pause(payload) });
     channel.on("user_left", payload => { this.callbacks.left(payload) });
 
     channel.onError((e) => {
