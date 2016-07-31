@@ -191,6 +191,9 @@ class Office extends React.Component {
           this.setState({online: "online"});
           console.log("Joined channel for image updates");
           this.adjustImageSize();
+          // If we joined, the others might not have our photo yet,
+          // so better send it - just to be on the safe side?
+          this.socket.update(this.state.ownFace.image);
           // The image doesn't show if captured immediately.
           // Wait a while before taking it.
           setTimeout(this.timedUpdateSnapshot, 1000);
