@@ -165,17 +165,23 @@ class Office extends React.Component {
     Webcam.on("load", () => {
       console.log("Loaded...");
       this.setState({camera: true});
-      this.updateSnapshot();
+      this.delayedSnapshot();
     });
     Webcam.on("live", () => {
       console.log("Live...");
       this.setState({camera: true});
-      this.updateSnapshot();
+      this.delayedSnapshot();
     });
     Webcam.on("error", () => {
       this.setState({camera: false});
       console.log("Error...");
     });
+    this.delayedSnapshot();
+  }
+
+  delayedSnapshot() {
+    console.log("Scheduling a delayed snapshot");
+    setTimeout(this.updateSnapshot, 2000);
   }
 
   componentDidMount() {
@@ -191,6 +197,9 @@ class Office extends React.Component {
           this.setState({online: "online"});
           console.log("Joined channel for image updates");
           this.adjustImageSize();
+          // If we joined, the others might not have our photo yet,
+          // so better send it - just to be on the safe side?
+          this.socket.update(this.state.ownFace.image);
           // The image doesn't show if captured immediately.
           // Wait a while before taking it.
           setTimeout(this.timedUpdateSnapshot, 1000);
