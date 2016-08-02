@@ -61,8 +61,8 @@ export class FaceSocket {
     setTimeout(this.connect, 10000);
   }
 
-  update(image) {
-    this.channel.push("update", {image: image});
+  update(face) {
+    this.channel.push("update", {face: face});
   }
 
   setDnd(state) {

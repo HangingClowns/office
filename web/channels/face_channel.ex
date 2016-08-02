@@ -14,9 +14,9 @@ defmodule Aircloak.FaceChannel do
   end
 
   @doc false
-  def handle_in("update", %{"image" => image}, socket) do
+  def handle_in("update", %{"face" => face}, socket) do
     Logger.info("Got an updated image for user #{socket.assigns.name}")
-    broadcast! socket, "update", %{image: image, name: socket.assigns.name}
+    broadcast! socket, "update", %{face: face, name: socket.assigns.name}
     {:noreply, socket}
   end
 

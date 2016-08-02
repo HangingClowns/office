@@ -54,7 +54,7 @@ class Office extends React.Component {
   togglePauseSnaptshot() {
     let ownFace = this.state.ownFace;
     ownFace.pause = ! ownFace.pause;
-    this.setState({ownFace: ownFace});
+    this.setState({ownFace});
     this.socket.setPause(ownFace.pause);
 
     if (ownFace.pause) {
@@ -90,9 +90,9 @@ class Office extends React.Component {
     }
     console.log("Updating photo");
     Webcam.snap((newImage) => {
-      this.socket.update(newImage);
       let ownFace = this.state.ownFace;
       ownFace.image = newImage;
+      this.sendUpdate(ownFace);
       this.setState({ownFace: ownFace});
     });
   }
@@ -118,20 +118,27 @@ class Office extends React.Component {
 
   handleRemoteFaceUpdate(payload) {
     console.log("New photo received");
+    let receivedFace = payload.face;
     let allFaces = this.state.faces;
     let existingPerson = allFaces.find((face) => {return face.name == payload.name});
     if (existingPerson != null) {
-      existingPerson.image = payload.image;
+      existingPerson.image = receivedFace.image;
+      existingPerson.dnd = receivedFace.dnd;
+      existingPerson.pause = receivedFace.pause;
       this.setState({faces: allFaces});
     } else {
-      allFaces.push(payload);
+      allFaces.push(receivedFace);
       this.adjustImageSizeWithFaces(allFaces);
       // We received the image from someone we don't yet know!
       // That means they are new, and don't yet have our picture!
       // How sad, let's upload our current picture again,
       // so they get it in their feed too:
-      this.socket.update(this.state.ownFace.image);
+      this.sendUpdate();
     }
+  }
+
+  sendUpdate() {
+    this.socket.update(this.state.ownFace);
   }
 
   adjustImageSizeWithFaces(faces) {
@@ -177,6 +184,7 @@ class Office extends React.Component {
       console.log("Error...");
     });
     this.delayedSnapshot();
+    this.adjustImageSize();
   }
 
   delayedSnapshot() {
@@ -199,7 +207,7 @@ class Office extends React.Component {
           this.adjustImageSize();
           // If we joined, the others might not have our photo yet,
           // so better send it - just to be on the safe side?
-          this.socket.update(this.state.ownFace.image);
+          this.sendUpdate(this.state.ownFace);
           // The image doesn't show if captured immediately.
           // Wait a while before taking it.
           setTimeout(this.timedUpdateSnapshot, 1000);
