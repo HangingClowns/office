@@ -118,7 +118,7 @@ div#office-faces {
   background-color: rgba(255, 0, 0, 0.5);
 }
 .face-image div.overlay.pause {
-  background-color: rgba(0, 0, 255, 0.5);
+  background-color: rgba(0, 0, 255, 0.2);
 }
 .face-image div.overlay span {
   visibility: hidden;
@@ -129,7 +129,8 @@ div#office-faces {
   margin: 10px;
   top: 20px;
   padding: 10px;
-  font-size: 3em;
+  padding-bottom: 5px;
+  font-size: 1.5em;
 }
 .face-image div.overlay.visible.dnd span {
   background-color: red;

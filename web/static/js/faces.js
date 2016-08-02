@@ -37,7 +37,7 @@ class Face extends React.Component {
     }
     if (this.props.face.pause) {
       overlayClasses += " visible pause";
-      overlayTitle = "PAUSED";
+      overlayTitle = "Paused";
     }
     return (
       <div className={classNames} style={imageSize}
