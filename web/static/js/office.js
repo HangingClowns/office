@@ -54,7 +54,7 @@ class Office extends React.Component {
   togglePauseSnaptshot() {
     let ownFace = this.state.ownFace;
     ownFace.pause = ! ownFace.pause;
-    this.setState({ownFace: ownFace});
+    this.setState({ownFace});
     this.socket.setPause(ownFace.pause);
 
     if (ownFace.pause) {
@@ -184,6 +184,7 @@ class Office extends React.Component {
       console.log("Error...");
     });
     this.delayedSnapshot();
+    this.adjustImageSize();
   }
 
   delayedSnapshot() {
