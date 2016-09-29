@@ -6,18 +6,12 @@ export class FaceSocket {
 
     // Bind functions, so we have access to the data.
     this.start = this.start.bind(this);
-    this.connect = this.connect.bind(this);
+    this.close = this.close.bind(this);
   }
 
   start(callbacks) {
-    // Store the callbacks, so we can reset them later.
-    this.callbacks = callbacks;
-    this.connect();
-  }
-
-  connect() {
     // Report that we are in the process of connecting
-    this.callbacks.connecting();
+    callbacks.connecting();
 
     this.socket = new Socket("/socket", {params: {user_id: this.userId}})
     this.socket.connect();
@@ -26,39 +20,31 @@ export class FaceSocket {
     let channel = this.socket.channel(`faces`, {})
     channel.join()
       .receive("ok", resp => {
-        this.callbacks.joined();
+        callbacks.joined();
       })
       .receive("error", resp => {
         console.log(`Failed at joining: ${resp}. Will re-attempt`);
-        this.callbacks.failed();
+        callbacks.failed();
         this.socket.disconnect();
         this.scheduleReconnet();
       })
-    channel.on("update", payload => { this.callbacks.update(payload) });
-    channel.on("dnd", payload => { this.callbacks.dnd(payload) });
-    channel.on("pause", payload => { this.callbacks.pause(payload) });
-    channel.on("user_left", payload => { this.callbacks.left(payload) });
+    channel.on("update", payload => { callbacks.update(payload) });
+    channel.on("dnd", payload => { callbacks.dnd(payload) });
+    channel.on("pause", payload => { callbacks.pause(payload) });
+    channel.on("user_left", payload => { callbacks.left(payload) });
 
     channel.onError((e) => {
-      this.callbacks.failed();
+      callbacks.failed();
       this.socket.disconnect();
-      this.scheduleReconnet();
     });
 
     channel.onClose((e) => {
       console.log("Channel closed", e);
-      this.callbacks.failed();
+      callbacks.failed();
       this.socket.disconnect();
-      this.scheduleReconnet();
     });
 
     this.channel = channel;
-  }
-
-  scheduleReconnet() {
-    // Don't hammer the server. Instead, in case there is an offline spell,
-    // try reconnecting after a while.
-    setTimeout(this.connect, 10000);
   }
 
   update(face) {
@@ -71,5 +57,9 @@ export class FaceSocket {
 
   setPause(state) {
     this.channel.push("state:pause", {state: state});
+  }
+
+  close() {
+    this.socket.disconnect();
   }
 }
