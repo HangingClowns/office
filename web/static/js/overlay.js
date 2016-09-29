@@ -20,7 +20,7 @@ export class OverlayScreen extends React.Component {
       return "Connecting...";
     }
     if (this.props.online == "offline") {
-      return "Problems abound!";
+      return "Not connected!";
     }
   }
   isOnline() {

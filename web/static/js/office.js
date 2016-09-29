@@ -13,7 +13,7 @@ class Office extends React.Component {
 
     this.state = {
       // Online status - "connecting", "offline", "online"
-      online: "connecting",
+      online: "offline",
 
       // Set to false if we don't have camera access
       camera: true,
@@ -45,6 +45,9 @@ class Office extends React.Component {
     this.handleDndUpdate = this.handleDndUpdate.bind(this);
     this.handlePauseUpdate = this.handlePauseUpdate.bind(this);
     this.setupCamera = this.setupCamera.bind(this);
+    this.connect = this.connect.bind(this);
+    this.ensureConnected = this.ensureConnected.bind(this);
+    this.sendUpdate = this.sendUpdate.bind(this);
 
     // When the window resizes, we need to calculate the image sizes
     // we can use to maximise the screen real-estate
@@ -138,7 +141,9 @@ class Office extends React.Component {
   }
 
   sendUpdate() {
-    this.socket.update(this.state.ownFace);
+    if (this.socket) {
+      this.socket.update(this.state.ownFace);
+    }
   }
 
   adjustImageSizeWithFaces(faces) {
@@ -195,6 +200,28 @@ class Office extends React.Component {
   componentDidMount() {
     this.setupCamera();
 
+    // We update the photo once per minute:
+    // 60 * 1000
+    setInterval(this.timedUpdateSnapshot, 60000);
+
+    // Check every so often whether we are still connected.
+    setInterval(this.ensureConnected, 1000);
+  }
+
+  ensureConnected() {
+    if (this.state.online === "offline") {
+      console.log("Is offline, trying to connect");
+      this.connect();
+    }
+  }
+
+  connect() {
+    // Paranoid closing of resources
+    if (this.socket) {
+      console.log("Doing a paranoid cleanup action");
+      this.socket.close();
+      this.socket = null;
+    }
     this.socket = new FaceSocket(this.state.ownFace.name);
     this.socket.start({
         connecting: () => {
@@ -221,10 +248,6 @@ class Office extends React.Component {
         dnd: this.handleDndUpdate,
         pause: this.handlePauseUpdate,
       });
-
-    // We update the photo once per minute:
-    // 60 * 1000
-    setInterval(this.timedUpdateSnapshot, 60000);
   }
 
   render() {
